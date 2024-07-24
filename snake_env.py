@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 import random
+import pygame
 from gym import spaces
 
 class SnakeEnv(gym.Env):
@@ -14,6 +15,11 @@ class SnakeEnv(gym.Env):
         self.action_space = spaces.Discrete(4)
         self.observation_space = spaces.Box(low=0, high=255, shape=(self.grid_width, self.grid_height, 3), dtype=np.uint8)
 
+        # Initialize Pygame
+        pygame.init()
+        self.screen = pygame.display.set_mode((self.grid_width * self.grid_size, self.grid_height * self.grid_size))
+        pygame.display.set_caption('Snake Game')
+        self.clock = pygame.time.Clock()
         self.reset()
 
     def reset(self):
@@ -64,10 +70,16 @@ class SnakeEnv(gym.Env):
                 self.snake.pop()
                 reward = 1
 
+        self.render()
         return self._get_obs(), reward, self.done, {}
 
-    def render(self, mode='human'):
-        pass
+    def render(self):
+        self.screen.fill((0, 0, 0))
+        for segment in self.snake:
+            pygame.draw.rect(self.screen, (0, 255, 0), pygame.Rect(segment[1] * self.grid_size, segment[0] * self.grid_size, self.grid_size, self.grid_size))
+        pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(self.food[1] * self.grid_size, self.food[0] * self.grid_size, self.grid_size, self.grid_size))
+        pygame.display.flip()
+        self.clock.tick(10)  # Control the game speed
 
     def close(self):
-        pass
+        pygame.quit()

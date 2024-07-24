@@ -1,6 +1,7 @@
 import numpy as np
 from collections import deque
 import matplotlib.pyplot as plt
+import pygame
 from snake_env import SnakeEnv
 from dqn_agent import DQNAgent
 import os
@@ -42,6 +43,7 @@ for e in range(episodes):
             break
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
+    
     episode_rewards.append(total_reward)
     average_rewards.append(np.mean(episode_rewards[-100:]))  # Average reward of the last 100 episodes
 
@@ -56,6 +58,9 @@ for e in range(episodes):
 
 # Save final model
 agent.save("model_weights/dqn_model_final.weights.h5")
+
+# Close environment
+env.close()
 
 # Plot rewards
 plt.figure(figsize=(12, 6))
